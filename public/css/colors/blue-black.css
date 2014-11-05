@@ -1,0 +1,86 @@
+a:hover {
+	color:#30b1e6;
+}
+
+.navigation li:before {
+content:'';
+background:#30b1e6;
+}
+
+.sep1 {
+background:#30b1e6;
+}
+
+.sep2 {
+background:#30b1e6;
+}
+
+.np-controls a:hover i {
+color:#30b1e6;
+}
+
+#filter-list li:hover {
+background:#30b1e6;
+}
+
+#filter-list li.active {
+background:#30b1e6;
+  color: #2c383c;
+}
+
+.skills-bg span {
+background:#30b1e6;
+}
+
+.services-info ul li:hover {
+background:#30b1e6;
+}
+
+.link-post {
+background:#30b1e6;
+}
+
+.quote-post blockquote {
+color:#30b1e6;
+}
+
+.contact-form button {
+background:#30b1e6;
+}
+
+.contact-form button:hover {
+color:#30b1e6;
+}
+
+.social li a:hover {
+color:#30b1e6;
+}
+
+.reply {
+background:#30b1e6;
+}
+
+.reply:hover {
+color:#30b1e6;
+}
+
+.overlay {
+background:rgba(48,177,230,0.9);
+}
+
+.folio-img h4 ,
+.folio-img p ,
+.navigation li a ,
+.navigation li a i ,
+.navigation li a:hover, .navigation li a:hover i, .flex-active a, .flex-active a i ,
+#filter-list li:hover ,
+#filter-list li.active ,
+.link-post i ,
+.link-post a ,
+.link-post a:hover ,
+.reply ,
+.contact-form button {
+color:#4e503b;
+	color: #fff !important;
+}
+

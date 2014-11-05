@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<!--[if IE 8]>			<html class="ie ie8"> <![endif]-->
+<!--[if IE 9]>			<html class="ie ie9"> <![endif]-->
+<!--[if gt IE 9]><!-->	<html> <!--<![endif]-->
+<head>
+
+	<!-- Meta -->
+	<meta charset="utf-8">
+	<meta name="keywords" content="HTML5 Template" />
+	<meta name="description" content="Multipress - Responsive Multipurpose HTML5 Template">
+	<meta name="author" content="">
+
+	<title> Premium Layers - Responsive HTML5 vCard Template</title>
+
+	<!-- Mobile Meta -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Favicons -->
+	<link rel="shortcut icon" href="/public/img/favicon.ico">
+	<link rel="apple-touch-icon" href="/public/img/apple-touch-icon.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="/public/img/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="/public/img/apple-touch-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="/public/img/apple-touch-icon-144x144.png">
+
+	<!-- Google Webfonts 
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,400italic,600,700,800,700italic,600italic' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Neuton:400,200,300' rel='stylesheet' type='text/css'>
+	-->
+	
+	<!--[if lt IE 9]>
+	<script src="/public/js/libs/respond.min.js"></script>
+	<![endif]-->
+
+	<!-- Bootstrap Core CSS -->
+	<link href="/public/css/bootstrap.css" rel="stylesheet">
+
+	<!-- Theme Styles CSS-->
+	<link href="/public/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="/public/css/style.css" >
+	<link rel="stylesheet" href="/public/css/flexslider.css"/>
+	<link rel="stylesheet" href="/public/css/nivo-lightbox.css" />
+	<link rel="stylesheet" href="/public/images/themes/default/default.css" />
+	<link rel="stylesheet" href="/public/css/jquery.mCustomScrollbar.min.css" />
+	<link rel="stylesheet" href="/public/css/animate.css" />
+
+
+	<!--[if lt IE 9]>
+	<script src="/public/js/libs/html5.js"></script>
+	<![endif]-->
+
+	<!-- Style Switch -->
+	<link rel="stylesheet" type="text/css" href="/public/css/colors/yellow-black.css" title="yellow" media="screen" />
+
+</head>
+<body>
+
+<div class="main-content">
+	<div class="container no-padding">
+		<div class="row">
+			<div class="col-md-3 l-content">
+				<!-- 菜单导航 -->
+				{{template "blog/navigation.html" .}}
+			</div>
+
+			<div class="col-md-9 r-content">
+				<div class="flexslider">
+					<div class="slides">
+						<section class="flex-active-slide">
+							<div class="item blog blog-single">
+								<div class="page-head">
+									<div class="row">
+										<div class="col-md-5">
+											<h3>Blog</h3>
+										</div>
+										<div class="col-md-7">
+										</div>
+									</div>
+								</div>
+
+								<div class="blog-wrap">
+									<article>
+										<div class="row">
+											<div class="col-md-12">
+												<h3>{{.post.Title}}</h3>
+												<div class="post-meta">
+													<i class="fa fa-calendar"></i> <a href="#">{{datetime .post.Created}}</a> 
+													<i class="fa fa-user"></i> <a href="#">Admin</a> 
+													<i class="fa fa-comments"></i> <a href="#">{{.post.CommentCount}} Comments</a> 
+												</div>
+												<p>{{raw .post.Content}}</p>
+											</div>
+										</div>
+									</article>
+
+									<div class="comments-wrap">
+										<h4>{{.post.CommentCount}} Comments</h4>
+										<ul>
+
+											{{range .comments}}
+											<li>
+												<div class="comment-avatar">
+													<img src="/public/images/xtra/{{randAvatar .Id}}" class="img-responsive"/>
+												</div>
+												<div class="comment-info">
+													<h6>{{.Name}} <span>{{datetime .Created}}</span></h6>
+													<p>{{.Message}}</p>
+												</div>
+											</li>
+											{{end}}
+											
+										</ul>
+									</div>
+									<div class="contact-form">
+										<h4>Leave a comment</h4>
+										<form id="commentForm">
+											<input type="hidden" name="comment.PostId" value="{{.post.Id}}">
+											<div class="row">
+												<div class="col-md-4">
+													<input type="text" placeholder="name" name="comment.Name">
+													<input type="text" placeholder="e-mail" name="comment.Email">
+													<input type="text" placeholder="website" name="comment.Website">
+												</div>
+												<div class="col-md-8">
+													<textarea rows="6" placeholder="Message" name="comment.Message"></textarea>
+													<button type="button" id="commentBtn">Send Message</button>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</section>
+					</div>
+				</div>
+
+				{{template "blog/footer.html" .}}
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- JavaScript -->
+<script src="/public/js/jquery-1.11.0.js"></script>
+<script src="/public/js/bootstrap.js"></script>
+<script src="/public/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="/public/js/animations.js"></script>
+<script type="text/javascript">
+	jQuery(document).ready(function($) {
+
+		$(window).load(function(){
+			$(".item").mCustomScrollbar({
+				theme:"dark"
+			});
+		});
+
+		$("#commentBtn").click(function(){
+			var data = {};
+			var elements = $("#commentForm input").add("#commentForm textarea");
+			elements.each(function(){
+				var name = $(this).attr('name');
+				var value = $(this).val();
+				if(value){
+					data[name] = value
+				}
+			});
+
+			$.post('/addComment',data, function(json){
+				if(json.succ){
+					$("#commentForm")[0].reset();
+					window.location.reload();
+				}else{
+					alert(json.error);
+				}
+			}, 'json');
+
+		});
+
+	});
+</script>
+
+
+</body>
+</html>

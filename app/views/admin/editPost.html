@@ -1,0 +1,73 @@
+
+{{append . "moreScripts" "js/ckeditor/ckeditor.js"}}
+
+{{template "admin/header.html" .}}
+
+<div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Forms</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+
+            {{template "admin/flash.html" .}}
+
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Basic Form Elements
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <form role="form" action="/admin/post/save" method="POST">
+                                        <input type="hidden" name="post.Id" value="{{.post.Id}}">
+                                        <div class="form-group">
+                                            <label>访问Slug：</label>
+                                            <input class="form-control" name="post.Slug" value="{{.post.Slug}}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>标题：</label>
+                                            <input class="form-control" name="post.Title" value="{{.post.Title}}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>内容：</label>
+                                            <textarea class="form-control ckeditor" name="post.Content">
+                                                {{.post.Content}}
+                                            </textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Tags：</label>
+                                            <input class="form-control" placeholder="多个请使用,分隔" name="post.Tags" value="{{.post.Tags}}">
+                                        </div>
+                                        <button type="submit" class="btn btn-default">提交表单</button>
+                                        <button type="reset" class="btn btn-default">重置</button>
+                                    </form>
+                                </div>
+                                <!-- /.col-lg-6 (nested) -->
+                            </div>
+                            <!-- /.row (nested) -->
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+
+<script type="text/javascript">
+    
+    $(function(){
+
+
+    });
+
+</script>
+
+{{template "admin/footer.html" .}}
