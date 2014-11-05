@@ -39,8 +39,8 @@ func (c *AppController) checkAuth() revel.Result {
 	}
 	matched, _ := regexp.MatchString(auth_check_pattern, c.Request.RequestURI)
 	if matched {
-		islogin := c.Session().Get("islogin")
-		if islogin == nil || islogin == false {
+		loginName := c.Session().Get("loginName")
+		if loginName == nil || loginName == "" {
 			return c.Forbidden("没有权限访问")
 		}
 	}

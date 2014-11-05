@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"blogo/app/models"
-	"fmt"
 	"github.com/revel/revel"
 	// "strconv"
 	"strings"
@@ -126,7 +125,7 @@ func (c Blog) Tags() revel.Result {
 
 	}
 
-	fmt.Println("allTags = ", allTags)
+	revel.TRACE.Println("allTags = ", allTags)
 	c.RenderArgs["allTags"] = allTags
 	return c.Render()
 }

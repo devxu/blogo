@@ -5,7 +5,7 @@
 <div id="page-wrapper">
     <div class="row">
         <div class="col-lg-12">
-            <h1 class="page-header">Tables</h1>
+            <h1 class="page-header">文章列表</h1>
         </div>
         <!-- /.col-lg-12 -->
     </div>
@@ -17,8 +17,8 @@
         <div class="col-lg-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    DataTables Advanced Tables
-                    <div class="btn-group pull-right">
+                    &nbsp;
+                    <div class="btn-group pull-left">
                         <a class="btn btn-block btn-default btn-xs" href="/admin/post/create"><i class="fa fa-plus-square"></i>&nbsp;新增</a>
                     </div>
                 </div>
@@ -70,13 +70,12 @@
         		{ 
                     "data": "CommentCount",
                     "render": function(data, type, row, meta){
-                        return "<a href='#'>" + data + "</a>";
+                        return "<a target='_blank' href='/post/"+ row.Slug +"#comments'>" + data + "</a>";
                     }
                 },
         		{ "data": "Created" },
                 { 
                     "render": function(data, type, row, meta){
-                        console.log(row);
                         var link = '<a class="btn btn-default btn-circle" href="/admin/post/edit/'+ row.Id +'"><i class="fa fa-pencil-square-o"></i></a>';
                         link += '&nbsp;&nbsp;<a class="btn btn-default btn-circle" onclick="del('+row.Id+')"><i class="fa fa-times"></i></a>';
                         return link;

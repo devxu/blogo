@@ -34,7 +34,7 @@ func (c Admin) QueryPosts() revel.Result {
 	length, _ := strconv.Atoi(c.Params.Get("length"))
 
 	var posts []models.Post
-	models.Engine.Cols("id", "title", "comment_count", "created").Desc("id").Limit(length, start).Find(&posts)
+	models.Engine.Cols("id", "Slug", "title", "comment_count", "created").Desc("id").Limit(length, start).Find(&posts)
 	total, _ := models.Engine.Count(&models.Post{})
 
 	result := &models.DataTableResult{}
@@ -143,11 +143,19 @@ func (c Admin) QueryComments() revel.Result {
  * 删除评论
  */
 func (c Admin) DeleteComment(id int64) revel.Result {
-	affects, _ := models.Engine.Id(id).Delete(&models.Comment{})
-	if affects > 0 {
-		c.Flash.Success("已成功删除！")
+	comment := models.Comment{}
+	has, _ := models.Engine.Id(id).Get(&comment)
+	if has {
+		affects, _ := models.Engine.Id(id).Delete(&comment)
+		if affects > 0 {
+			sql := "update post set comment_count = comment_count - 1 where id = ?"
+			models.Engine.Exec(sql, comment.PostId)
+			c.Flash.Success("已成功删除！")
+		} else {
+			c.Flash.Error("删除失败！")
+		}
 	} else {
-		c.Flash.Error("删除失败！")
+		c.Flash.Error("评论不存在！")
 	}
 	return c.Redirect("/admin/comments")
 }
@@ -166,11 +174,11 @@ func (c Admin) Login() revel.Result {
 func (c Admin) LoginSubmit(username string, password string) revel.Result {
 	if len(username) > 0 && len(password) > 0 {
 		hash := md5.New()
-		io.WriteString(hash, username+"G$#$%^1352%"+password)
+		io.WriteString(hash, username+"^_^"+password)
 		secret := strings.ToUpper(fmt.Sprintf("%x", hash.Sum(nil)))
 		loginSecret, _ := models.MyConfig.String("login", "login.secret")
 		if secret == loginSecret {
-			c.Session().Set("islogin", true)
+			c.Session().Set("loginName", username)
 			return c.Redirect("/admin/index")
 		}
 

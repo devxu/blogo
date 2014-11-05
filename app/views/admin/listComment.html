@@ -5,7 +5,7 @@
 <div id="page-wrapper">
     <div class="row">
         <div class="col-lg-12">
-            <h1 class="page-header">Tables</h1>
+            <h1 class="page-header">评论列表</h1>
         </div>
         <!-- /.col-lg-12 -->
     </div>
@@ -16,9 +16,6 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    DataTables Advanced Tables
-                </div>
 
                 <!-- /.panel-heading -->
                 <div class="panel-body">
@@ -63,12 +60,21 @@
             },
             columns: [
                 { "data": "Id" },
-                { "data": "Name" },
-                { "data": "Message" },
+                { 
+                    "data": "Name",
+                    "render": function(data, type, row, meta){
+                        return filterXss(data);
+                    }
+                },
+                { 
+                    "data": "Message",
+                    "render": function(data, type, row, meta){
+                        return filterXss(data);
+                    }
+                 },
                 { "data": "Created" },
                 { 
                     "render": function(data, type, row, meta){
-                        console.log(row);
                         var link = '&nbsp;&nbsp;<a class="btn btn-default btn-circle" onclick="del('+row.Id+')"><i class="fa fa-times"></i></a>';
                         return link;
                     }
@@ -84,6 +90,20 @@
         }
 
         window.location.href = "/admin/comment/delete/" + id;
+    }
+
+    function filterXss(data){
+        var ret = "";
+        for(var i = 0;i<data.length;i++){
+            if(data[i] == '<'){
+                ret += "&lt;";
+            }else if(data[i] == '>'){
+                ret += "&gt;";
+            }else{
+                ret += data[i];
+            }
+        }
+        return ret;
     }
 
 </script>

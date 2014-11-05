@@ -56,7 +56,7 @@ func addTemplateFun() {
 			reg, _ := regexp.Compile("<(.[^>]*)>")
 			text = reg.ReplaceAllString(text, "")
 			if utf8.RuneCountInString(text) > 200 {
-				text = string([]rune(text)[0:200])
+				text = string([]rune(text)[0:200]) + "..."
 			}
 		}
 		return text
