@@ -3,9 +3,10 @@ package controllers
 import (
 	"blogo/app"
 	// "fmt"
-	"github.com/revel/revel"
 	"regexp"
 	"strings"
+
+	"github.com/revel/revel"
 )
 
 const (
@@ -21,7 +22,7 @@ type AppController struct {
  * 获取当前Session，没有则创建
  */
 func (c *AppController) Session() *app.CachedSession {
-	session := app.GetCachedSession(c.Request.Request)
+	session := app.GetCachedSession(c.Request)
 	if session == nil {
 		session = app.NewCachedSession()
 		c.SetCookie(session.Cookie())
@@ -33,11 +34,11 @@ func (c *AppController) Session() *app.CachedSession {
  * 检查权限
  */
 func (c *AppController) checkAuth() revel.Result {
-	if strings.Contains(auth_ignore_paths, c.Request.RequestURI) {
+	if strings.Contains(auth_ignore_paths, c.Request.GetRequestURI()) {
 		//忽略检查地址
 		return nil
 	}
-	matched, _ := regexp.MatchString(auth_check_pattern, c.Request.RequestURI)
+	matched, _ := regexp.MatchString(auth_check_pattern, c.Request.GetRequestURI())
 	if matched {
 		loginName := c.Session().Get("loginName")
 		if loginName == nil || loginName == "" {

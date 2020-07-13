@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"blogo/app/models"
+
 	"github.com/revel/revel"
+
 	// "strconv"
 	"strings"
 	"time"
@@ -22,7 +24,7 @@ func (c Blog) Index() revel.Result {
 		panic(err)
 	}
 
-	c.RenderArgs["posts"] = posts
+	c.ViewArgs["posts"] = posts
 
 	return c.Render()
 }
@@ -43,8 +45,8 @@ func (c Blog) ShowPost(slug string) revel.Result {
 	if has {
 		var comments []models.Comment
 		models.Engine.Where("post_id = ?", post.Id).Find(&comments)
-		c.RenderArgs["post"] = post
-		c.RenderArgs["comments"] = comments
+		c.ViewArgs["post"] = post
+		c.ViewArgs["comments"] = comments
 		return c.Render()
 	}
 	return c.NotFound("404你懂的！")
@@ -58,7 +60,7 @@ func (c Blog) AddComment(comment models.Comment) revel.Result {
 	post := models.Post{}
 	has, _ := models.Engine.Id(comment.PostId).Get(&post)
 	if !has {
-		return c.RenderJson(&models.AjaxResult{Succ: false, Error: "评论的文章不存在"})
+		return c.RenderJSON(&models.AjaxResult{Succ: false, Error: "评论的文章不存在"})
 	}
 
 	comment.Validate(c.Validation)
@@ -67,7 +69,7 @@ func (c Blog) AddComment(comment models.Comment) revel.Result {
 		for _, validErr := range c.Validation.Errors {
 			errorMsg += validErr.Message + "\n"
 		}
-		return c.RenderJson(&models.AjaxResult{Succ: false, Error: errorMsg})
+		return c.RenderJSON(&models.AjaxResult{Succ: false, Error: errorMsg})
 	}
 
 	comment.Created = time.Now()
@@ -75,9 +77,9 @@ func (c Blog) AddComment(comment models.Comment) revel.Result {
 	if affects > 0 {
 		sql := "update post set comment_count = comment_count + 1 where id = ?"
 		models.Engine.Exec(sql, comment.PostId)
-		return c.RenderJson(&models.AjaxResult{Succ: true})
+		return c.RenderJSON(&models.AjaxResult{Succ: true})
 	}
-	return c.RenderJson(&models.AjaxResult{Succ: false, Error: "添加评论出错！"})
+	return c.RenderJSON(&models.AjaxResult{Succ: false, Error: "添加评论出错！"})
 }
 
 /**
@@ -102,8 +104,8 @@ func (c Blog) Archives() revel.Result {
 		archiveMap[year_month] = append(archiveMap[year_month], p)
 	}
 
-	c.RenderArgs["archiveMonths"] = archiveMonths
-	c.RenderArgs["archiveMap"] = archiveMap
+	c.ViewArgs["archiveMonths"] = archiveMonths
+	c.ViewArgs["archiveMap"] = archiveMap
 	return c.Render()
 }
 
@@ -125,8 +127,7 @@ func (c Blog) Tags() revel.Result {
 
 	}
 
-	revel.TRACE.Println("allTags = ", allTags)
-	c.RenderArgs["allTags"] = allTags
+	c.ViewArgs["allTags"] = allTags
 	return c.Render()
 }
 

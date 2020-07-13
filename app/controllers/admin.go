@@ -2,14 +2,15 @@ package controllers
 
 import (
 	"blogo/app/models"
-	"code.google.com/p/go-uuid/uuid"
 	"crypto/md5"
 	"fmt"
-	"github.com/revel/revel"
 	"io"
 	"strconv"
 	"strings"
 	"time"
+
+	"code.google.com/p/go-uuid/uuid"
+	"github.com/revel/revel"
 )
 
 type Admin struct {
@@ -42,25 +43,25 @@ func (c Admin) QueryPosts() revel.Result {
 	result.Data = &posts
 	result.RecordsFiltered = total
 	result.RecordsTotal = total
-	return c.RenderJson(result)
+	return c.RenderJSON(result)
 }
 
 /** 创建文章*/
 func (c Admin) CreatePost() revel.Result {
-	c.RenderArgs["title"] = "创建文章"
+	c.ViewArgs["title"] = "创建文章"
 	post := &models.Post{}
 	post.Slug = strings.Replace(uuid.NewUUID().String(), "-", "", -1)
-	c.RenderArgs["post"] = post
+	c.ViewArgs["post"] = post
 	return c.RenderTemplate("admin/editPost.html")
 }
 
 /** 编辑文章*/
 func (c Admin) EditPost(id int64) revel.Result {
-	c.RenderArgs["title"] = "编辑文章"
+	c.ViewArgs["title"] = "编辑文章"
 	var post models.Post
 	succ, _ := models.Engine.Id(id).Get(&post)
 	if succ {
-		c.RenderArgs["post"] = &post
+		c.ViewArgs["post"] = &post
 	}
 	return c.Render()
 }
@@ -80,7 +81,7 @@ func (c Admin) DeletePost(id int64) revel.Result {
 /** 保存文章*/
 func (c Admin) SavePost(post models.Post) revel.Result {
 
-	c.RenderArgs["post"] = &post
+	c.ViewArgs["post"] = &post
 
 	post.Validate(c.Validation)
 	if c.Validation.HasErrors() {
@@ -136,7 +137,7 @@ func (c Admin) QueryComments() revel.Result {
 	result.Data = &comments
 	result.RecordsFiltered = total
 	result.RecordsTotal = total
-	return c.RenderJson(result)
+	return c.RenderJSON(result)
 }
 
 /**
@@ -164,7 +165,7 @@ func (c Admin) DeleteComment(id int64) revel.Result {
  * 登录页面
  */
 func (c Admin) Login() revel.Result {
-	c.RenderArgs["title"] = "管理后台登录"
+	c.ViewArgs["title"] = "管理后台登录"
 	return c.Render()
 }
 

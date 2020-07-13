@@ -1,13 +1,14 @@
 package app
 
 import (
-	"code.google.com/p/go-uuid/uuid"
-	"github.com/revel/revel"
-	"github.com/revel/revel/cache"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
+
+	"code.google.com/p/go-uuid/uuid"
+	"github.com/revel/revel"
+	"github.com/revel/revel/cache"
 )
 
 const (
@@ -79,19 +80,19 @@ func (s *CachedSession) Cookie() *http.Cookie {
 func CachedSessionFilter(c *revel.Controller, fc []revel.Filter) {
 	fc[0](c, fc[1:])
 
-	session := GetCachedSession(c.Request.Request)
+	session := GetCachedSession(c.Request)
 	if session != nil {
 		cache.Replace(session.Id, *session, EXPIRE_AFTER_DURATION)
-		c.RenderArgs["session"] = session
+		c.ViewArgs["session"] = session
 	}
 
 }
 
-func GetCachedSession(req *http.Request) *CachedSession {
+func GetCachedSession(req *revel.Request) *CachedSession {
 	cookie, _ := req.Cookie(COOKIE_NAME_SESSIONID)
 	if cookie != nil {
 		session := &CachedSession{Items: map[string]interface{}{}}
-		err := cache.Get(cookie.Value, session)
+		err := cache.Get(cookie.GetValue(), session)
 		if err == nil {
 			return session
 		}
