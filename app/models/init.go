@@ -3,12 +3,13 @@ package models
 import (
 	"code.google.com/p/go-uuid/uuid"
 	// _ "github.com/go-sql-driver/mysql"
+	"strings"
+	"time"
+
 	"github.com/go-xorm/xorm"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/revel/revel"
 	"github.com/robfig/config"
-	"strings"
-	"time"
 )
 
 var (
@@ -66,7 +67,7 @@ func insertTestData() {
 			firstComment.Message = "第一个评论测试"
 			firstComment.Created = time.Now()
 			affects, _ = Engine.InsertOne(firstComment)
-			revel.TRACE.Println("insert first comment affects = ", affects)
+			revel.AppLog.Info("insert first comment affects = ", affects)
 			if affects > 0 {
 				firstPost.CommentCount = 1
 				Engine.Update(firstPost)
