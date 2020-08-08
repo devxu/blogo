@@ -66,13 +66,13 @@
             },
         	columns: [
         		{ "data": "Id" },
-        		{ "data": "Title" },
         		{ 
-                    "data": "CommentCount",
+                    "data": "Title",
                     "render": function(data, type, row, meta){
-                        return "<a target='_blank' href='/post/"+ row.Slug +"#comments'>" + data + "</a>";
+                        return "<a target='_blank' href='/post/"+ row.Slug +"'>" + data + "</a>";
                     }
                 },
+        		{ "data": "CommentCount", },
         		{ "data": "Created" },
                 { 
                     "render": function(data, type, row, meta){
@@ -97,3 +97,4 @@
 </script>
 
 {{template "admin/footer.html" .}}
+
