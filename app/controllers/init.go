@@ -2,21 +2,22 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/revel/revel"
 	"regexp"
 	"time"
 	"unicode/utf8"
+
+	"github.com/revel/revel"
 )
 
 func init() {
 
 	revel.InterceptMethod((*AppController).checkAuth, revel.BEFORE)
 
-	addTemplateFun()
+	initTemplateFun()
 }
 
-//添加模板函数
-func addTemplateFun() {
+//初始化模板函数
+func initTemplateFun() {
 
 	revel.TemplateFuncs["delHtml"] = func(text string) string {
 		if text != "" {

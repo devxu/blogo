@@ -19,7 +19,7 @@ type Admin struct {
 
 /** 后台首页*/
 func (c Admin) Index() revel.Result {
-	fmt.Println("session = ", c.Session())
+	fmt.Println("Current session = ", c.Session())
 	return c.Render()
 }
 
@@ -90,7 +90,6 @@ func (c Admin) SavePost(post models.Post) revel.Result {
 
 	existPost := new(models.Post)
 	has, _ := models.Engine.Where("Slug = ?", post.Slug).Get(existPost)
-	fmt.Println("has == ", has)
 	if has && existPost.Id != post.Id {
 		c.Validation.Error("Slug已经被使用！")
 		return c.RenderTemplate("admin/editPost.html")
