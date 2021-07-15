@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"code.google.com/p/go-uuid/uuid"
+	"github.com/google/uuid"
 	"github.com/revel/revel"
 	"github.com/revel/revel/cache"
 )
@@ -101,7 +101,7 @@ func GetCachedSession(req *revel.Request) *CachedSession {
 }
 
 func NewCachedSession() *CachedSession {
-	sid := "SID-" + strings.ToUpper(strings.Replace(uuid.NewUUID().String(), "-", "", -1))
+	sid := "SID-" + strings.ToUpper(strings.Replace(uuid.NewString(), "-", "", -1))
 	session := CachedSession{Id: sid, Items: map[string]interface{}{}}
 	cache.Add(session.Id, session, EXPIRE_AFTER_DURATION)
 	return &session

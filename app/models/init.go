@@ -1,7 +1,7 @@
 package models
 
 import (
-	"code.google.com/p/go-uuid/uuid"
+	"github.com/google/uuid"
 	// _ "github.com/go-sql-driver/mysql"
 	"strings"
 	"time"
@@ -52,7 +52,7 @@ func insertTestData() {
 	firstPost := &Post{}
 	count, _ := Engine.Count(firstPost)
 	if count == 0 {
-		firstPost.Slug = strings.Replace(uuid.NewUUID().String(), "-", "", -1)
+		firstPost.Slug = strings.Replace(uuid.NewString(), "-", "", -1)
 		firstPost.Title = "Hello world!"
 		firstPost.Content = "第一篇测试内容，<strong>Hello world!</strong>"
 		firstPost.Tags = "测试"

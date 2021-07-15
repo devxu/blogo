@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"code.google.com/p/go-uuid/uuid"
+	"github.com/google/uuid"
 	"github.com/revel/revel"
 )
 
@@ -50,7 +50,7 @@ func (c Admin) QueryPosts() revel.Result {
 func (c Admin) CreatePost() revel.Result {
 	c.ViewArgs["title"] = "创建文章"
 	post := &models.Post{}
-	post.Slug = strings.Replace(uuid.NewUUID().String(), "-", "", -1)
+	post.Slug = strings.Replace(uuid.NewString(), "-", "", -1)
 	c.ViewArgs["post"] = post
 	return c.RenderTemplate("admin/editPost.html")
 }
