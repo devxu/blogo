@@ -17,18 +17,18 @@ type Admin struct {
 	AppController
 }
 
-/** 后台首页*/
+/** Admin Home */
 func (c Admin) Index() revel.Result {
 	fmt.Println("Current session = ", c.Session())
 	return c.Render()
 }
 
-/** 文章列表 */
+/** Post list */
 func (c Admin) ListPost() revel.Result {
 	return c.Render()
 }
 
-/** 分页查询Posts返回JSON格式*/
+/** Paginated query posts */
 func (c Admin) QueryPosts() revel.Result {
 	draw, _ := strconv.Atoi(c.Params.Get("draw"))
 	start, _ := strconv.Atoi(c.Params.Get("start"))
@@ -46,7 +46,7 @@ func (c Admin) QueryPosts() revel.Result {
 	return c.RenderJSON(result)
 }
 
-/** 创建文章*/
+/** Create post */
 func (c Admin) CreatePost() revel.Result {
 	c.ViewArgs["title"] = "创建文章"
 	post := &models.Post{}
@@ -55,7 +55,7 @@ func (c Admin) CreatePost() revel.Result {
 	return c.RenderTemplate("admin/editPost.html")
 }
 
-/** 编辑文章*/
+/** Edit post */
 func (c Admin) EditPost(id int64) revel.Result {
 	c.ViewArgs["title"] = "编辑文章"
 	var post models.Post
@@ -66,7 +66,7 @@ func (c Admin) EditPost(id int64) revel.Result {
 	return c.Render()
 }
 
-/** 删除文章*/
+/** Delete post */
 func (c Admin) DeletePost(id int64) revel.Result {
 	affects, _ := models.Engine.Id(id).Delete(&models.Post{})
 	if affects > 0 {
@@ -78,7 +78,7 @@ func (c Admin) DeletePost(id int64) revel.Result {
 	return c.Redirect("/admin/posts")
 }
 
-/** 保存文章*/
+/** Save post */
 func (c Admin) SavePost(post models.Post) revel.Result {
 
 	c.ViewArgs["post"] = &post
@@ -114,13 +114,13 @@ func (c Admin) SavePost(post models.Post) revel.Result {
 
 }
 
-/** 查看评论*/
+/** query comments */
 func (c Admin) ListComment() revel.Result {
 	return c.Render()
 }
 
 /**
- * 分页查询评论返回JSON结果
+ * Paginated query comments
  */
 func (c Admin) QueryComments() revel.Result {
 	draw, _ := strconv.Atoi(c.Params.Get("draw"))
@@ -140,7 +140,7 @@ func (c Admin) QueryComments() revel.Result {
 }
 
 /**
- * 删除评论
+ * Delete comment by id
  */
 func (c Admin) DeleteComment(id int64) revel.Result {
 	comment := models.Comment{}
@@ -161,7 +161,7 @@ func (c Admin) DeleteComment(id int64) revel.Result {
 }
 
 /**
- * 登录页面
+ * Login page
  */
 func (c Admin) Login() revel.Result {
 	c.ViewArgs["title"] = "管理后台登录"
@@ -169,7 +169,7 @@ func (c Admin) Login() revel.Result {
 }
 
 /**
- * 提交登录请求
+ * Submit to login
  */
 func (c Admin) LoginSubmit(username string, password string) revel.Result {
 	if len(username) > 0 && len(password) > 0 {
@@ -188,7 +188,7 @@ func (c Admin) LoginSubmit(username string, password string) revel.Result {
 }
 
 /**
- * 退出
+ * Logout
  */
 func (c Admin) Logout() revel.Result {
 	c.Session().Invalidate() //销毁Session
