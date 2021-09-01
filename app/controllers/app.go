@@ -17,9 +17,7 @@ type AppController struct {
 	*revel.Controller
 }
 
-/**
- * 获取当前Session，没有则创建
- */
+// Session 获取当前Session，没有则创建
 func (c *AppController) Session() *app.CachedSession {
 	session := app.GetCachedSession(c.Request)
 	if session == nil {
@@ -29,9 +27,7 @@ func (c *AppController) Session() *app.CachedSession {
 	return session
 }
 
-/**
- * 检查权限
- */
+// checkAuth 检查权限
 func (c *AppController) checkAuth() revel.Result {
 	if strings.Contains(auth_ignore_paths, c.Request.GetRequestURI()) {
 		//忽略检查地址

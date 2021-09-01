@@ -16,7 +16,7 @@ func init() {
 	initTemplateFun()
 }
 
-//初始化模板函数
+// Initialize template functions
 func initTemplateFun() {
 
 	revel.TemplateFuncs["delHtml"] = func(text string) string {

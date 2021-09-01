@@ -13,9 +13,7 @@ type Blog struct {
 	AppController
 }
 
-/**
- * 博客首页
- */
+// Index The blog home page
 func (c Blog) Index() revel.Result {
 	var posts []models.Post
 	err := models.Engine.Desc("id").Limit(4, 0).Find(&posts)
@@ -28,16 +26,12 @@ func (c Blog) Index() revel.Result {
 	return c.Render()
 }
 
-/**
- * 分页查询
- */
+// QueryPage Paginated query posts
 func (c Blog) QueryPage(page int) revel.Result {
 	return c.Render()
 }
 
-/**
- * 文章内容
- */
+// ShowPost Show post page
 func (c Blog) ShowPost(slug string) revel.Result {
 	post := new(models.Post)
 	has, _ := models.Engine.Where("Slug = ? ", slug).Get(post)
@@ -51,9 +45,7 @@ func (c Blog) ShowPost(slug string) revel.Result {
 	return c.NotFound("404你懂的！")
 }
 
-/**
- * 添加评论
- */
+// AddComment Add comment
 func (c Blog) AddComment(comment models.Comment) revel.Result {
 
 	post := models.Post{}
@@ -81,9 +73,7 @@ func (c Blog) AddComment(comment models.Comment) revel.Result {
 	return c.RenderJSON(&models.AjaxResult{Succ: false, Error: "添加评论出错！"})
 }
 
-/**
- * 文章归档
- */
+// Archives Show post archives
 func (c Blog) Archives() revel.Result {
 
 	var posts []models.Post
@@ -108,9 +98,7 @@ func (c Blog) Archives() revel.Result {
 	return c.Render()
 }
 
-/**
- * 标签
- */
+// Tags Show all tags
 func (c Blog) Tags() revel.Result {
 
 	allTags := map[string]int64{}
@@ -130,16 +118,12 @@ func (c Blog) Tags() revel.Result {
 	return c.Render()
 }
 
-/**
- * 作品展示
- */
+// Works Show all works
 func (c Blog) Works() revel.Result {
 	return c.Render()
 }
 
-/**
- * 关于
- */
+// About To about page
 func (c Blog) About() revel.Result {
 	return c.Render()
 }

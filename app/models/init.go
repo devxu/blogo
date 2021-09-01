@@ -8,8 +8,8 @@ import (
 
 	"github.com/go-xorm/xorm"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/revel/config"
 	"github.com/revel/revel"
-	"github.com/robfig/config"
 )
 
 var (

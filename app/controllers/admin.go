@@ -17,18 +17,18 @@ type Admin struct {
 	AppController
 }
 
-/** Admin Home */
+// Index  Admin Home
 func (c Admin) Index() revel.Result {
 	fmt.Println("Current session = ", c.Session())
 	return c.Render()
 }
 
-/** Post list */
+// ListPost  Post list
 func (c Admin) ListPost() revel.Result {
 	return c.Render()
 }
 
-/** Paginated query posts */
+// QueryPosts Paginated query posts
 func (c Admin) QueryPosts() revel.Result {
 	draw, _ := strconv.Atoi(c.Params.Get("draw"))
 	start, _ := strconv.Atoi(c.Params.Get("start"))
@@ -46,7 +46,7 @@ func (c Admin) QueryPosts() revel.Result {
 	return c.RenderJSON(result)
 }
 
-/** Create post */
+// CreatePost  Create post
 func (c Admin) CreatePost() revel.Result {
 	c.ViewArgs["title"] = "创建文章"
 	post := &models.Post{}
@@ -55,7 +55,7 @@ func (c Admin) CreatePost() revel.Result {
 	return c.RenderTemplate("admin/editPost.html")
 }
 
-/** Edit post */
+// EditPost Edit post
 func (c Admin) EditPost(id int64) revel.Result {
 	c.ViewArgs["title"] = "编辑文章"
 	var post models.Post
@@ -66,7 +66,7 @@ func (c Admin) EditPost(id int64) revel.Result {
 	return c.Render()
 }
 
-/** Delete post */
+// DeletePost Delete post
 func (c Admin) DeletePost(id int64) revel.Result {
 	affects, _ := models.Engine.Id(id).Delete(&models.Post{})
 	if affects > 0 {
@@ -78,7 +78,7 @@ func (c Admin) DeletePost(id int64) revel.Result {
 	return c.Redirect("/admin/posts")
 }
 
-/** Save post */
+// SavePost Save post
 func (c Admin) SavePost(post models.Post) revel.Result {
 
 	c.ViewArgs["post"] = &post
@@ -114,14 +114,12 @@ func (c Admin) SavePost(post models.Post) revel.Result {
 
 }
 
-/** query comments */
+// ListComment query comments
 func (c Admin) ListComment() revel.Result {
 	return c.Render()
 }
 
-/**
- * Paginated query comments
- */
+// QueryComments Paginated query comments
 func (c Admin) QueryComments() revel.Result {
 	draw, _ := strconv.Atoi(c.Params.Get("draw"))
 	start, _ := strconv.Atoi(c.Params.Get("start"))
@@ -139,9 +137,7 @@ func (c Admin) QueryComments() revel.Result {
 	return c.RenderJSON(result)
 }
 
-/**
- * Delete comment by id
- */
+// DeleteComment Delete comment by id
 func (c Admin) DeleteComment(id int64) revel.Result {
 	comment := models.Comment{}
 	has, _ := models.Engine.Id(id).Get(&comment)
@@ -160,17 +156,13 @@ func (c Admin) DeleteComment(id int64) revel.Result {
 	return c.Redirect("/admin/comments")
 }
 
-/**
- * Login page
- */
+// Login To login page
 func (c Admin) Login() revel.Result {
 	c.ViewArgs["title"] = "管理后台登录"
 	return c.Render()
 }
 
-/**
- * Submit to login
- */
+// LoginSubmit Submit to login
 func (c Admin) LoginSubmit(username string, password string) revel.Result {
 	if len(username) > 0 && len(password) > 0 {
 		hash := md5.New()
@@ -187,9 +179,7 @@ func (c Admin) LoginSubmit(username string, password string) revel.Result {
 	return c.Redirect("/admin/login")
 }
 
-/**
- * Logout
- */
+// Logout do logout
 func (c Admin) Logout() revel.Result {
 	c.Session().Invalidate() //销毁Session
 	return c.Redirect("/admin/login")
