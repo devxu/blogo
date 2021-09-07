@@ -7,7 +7,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"html/template"
 	"io"
-	"log"
 	"regexp"
 	"strings"
 	"time"
@@ -17,6 +16,7 @@ import (
 const (
 	auth_ignore_paths  = "/admin/login,/admin/logout"
 	auth_check_pattern = "^/admin/.*$"
+	flash_error        = "flash.error"
 )
 
 var (
@@ -65,14 +65,18 @@ type TemplateRenderer struct {
 func NewTemplateRenderer() *TemplateRenderer {
 
 	renderer := &TemplateRenderer{}
-	renderer.templates = template.Must(template.New("renderer").Funcs(funcMap).ParseGlob("app/views/**/*.html"))
-
-	log.Println(renderer.templates.DefinedTemplates())
-
+	renderer.templates = template.Must(template.New("renderer").Funcs(funcMap).ParseGlob("views/**/*"))
+	//log.Println(renderer.templates.DefinedTemplates())
 	return renderer
 }
 
 func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	if data == nil {
+		data = make(echo.Map)
+	}
+	if dataMap, ok := data.(echo.Map); ok {
+		dataMap["session"] = getSession(c).Values
+	}
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 

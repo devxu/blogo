@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"blogo/app/models"
+	"blogo/models"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strings"
@@ -16,8 +16,9 @@ func Index(c echo.Context) error {
 		panic(err)
 	}
 
-	c.Set("posts", posts)
-	return c.Render(http.StatusOK, "blog/index.html", nil)
+	data := make(echo.Map)
+	data["posts"] = posts
+	return c.Render(http.StatusOK, "index.html", data)
 }
 
 // QueryPage Paginated query posts
@@ -35,9 +36,11 @@ func ShowPost(c echo.Context) error {
 	if has {
 		var comments []models.Comment
 		models.Engine.Where("post_id = ?", post.Id).Find(&comments)
-		c.Set("post", post)
-		c.Set("comments", comments)
-		return c.Render(http.StatusOK, "blog/showPost.html", nil)
+
+		data := make(echo.Map)
+		data["post"] = post
+		data["comments"] = comments
+		return c.Render(http.StatusOK, "showPost.html", data)
 	}
 	return echo.ErrNotFound
 }
@@ -95,9 +98,10 @@ func Archives(c echo.Context) error {
 		archiveMap[year_month] = append(archiveMap[year_month], p)
 	}
 
-	c.Set("archiveMonths", archiveMonths)
-	c.Set("archiveMap", archiveMap)
-	return c.Render(http.StatusOK, "blog/archives.html", nil)
+	data := make(echo.Map)
+	data["archiveMonths"] = archiveMonths
+	data["archiveMap"] = archiveMap
+	return c.Render(http.StatusOK, "archives.html", data)
 }
 
 // Tags Show all tags
@@ -116,16 +120,17 @@ func Tags(c echo.Context) error {
 
 	}
 
-	c.Set("allTags", allTags)
-	return c.Render(http.StatusOK, "blog/tags.html", nil)
+	data := make(echo.Map)
+	data["allTags"] = allTags
+	return c.Render(http.StatusOK, "tags.html", data)
 }
 
 // Works Show all works
 func Works(c echo.Context) error {
-	return c.Render(http.StatusOK, "blog/works.html", nil)
+	return c.Render(http.StatusOK, "works.html", nil)
 }
 
 // About To about page
 func About(c echo.Context) error {
-	return c.Render(http.StatusOK, "blog/about.html", nil)
+	return c.Render(http.StatusOK, "about.html", nil)
 }

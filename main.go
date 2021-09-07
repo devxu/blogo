@@ -1,7 +1,7 @@
 package main
 
 import (
-	"blogo/app/controllers"
+	"blogo/controllers"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
@@ -12,10 +12,14 @@ import (
 
 func main() {
 
-	log.Println("session_key:", os.Getenv("session_key"))
+	session_key := os.Getenv("session_key")
+	log.Println("session_key:", session_key)
+	if len(session_key) == 0 {
+		log.Fatalln("Please set up session_key in environment variables before running")
+	}
 
 	e := echo.New()
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte(os.Getenv("session_key")))))
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte(session_key))))
 	e.Use(controllers.CheckAuth())
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())

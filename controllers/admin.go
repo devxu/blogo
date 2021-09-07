@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"blogo/app/models"
+	"blogo/models"
 	"crypto/md5"
 	"fmt"
 	"github.com/google/uuid"
@@ -13,15 +13,15 @@ import (
 	"time"
 )
 
-// Index  Admin Home
+// Home  Admin Home
 func Home(c echo.Context) error {
-	fmt.Println("Current session = ", getSession(c))
+	fmt.Println("Current session values:", getSession(c).Values)
 	return c.Render(http.StatusOK, "home.html", nil)
 }
 
 // ListPost  Post list
 func ListPost(c echo.Context) error {
-	return c.Render(http.StatusOK, "admin/listPost.html", nil)
+	return c.Render(http.StatusOK, "listPost.html", nil)
 }
 
 // QueryPosts Paginated query posts
@@ -46,22 +46,25 @@ func QueryPosts(c echo.Context) error {
 func CreatePost(c echo.Context) error {
 	post := &models.Post{}
 	post.Slug = strings.Replace(uuid.NewString(), "-", "", -1)
-	c.Set("title", "创建文章")
-	c.Set("post", post)
-	return c.Render(http.StatusOK, "admin/editPost.html", nil)
+
+	data := make(echo.Map)
+	data["title"] = "创建文章"
+	data["post"] = post
+	return c.Render(http.StatusOK, "editPost.html", data)
 }
 
 // EditPost Edit post
 func EditPost(c echo.Context) error {
-	c.Set("title", "编辑文章")
+	data := make(echo.Map)
+	data["title"] = "编辑文章"
 
 	id := c.Param("id")
 	var post models.Post
 	succ, _ := models.Engine.Id(id).Get(&post)
 	if succ {
-		c.Set("post", &post)
+		data["post"] = &post
 	}
-	return c.Render(http.StatusOK, "admin/editPost.html", nil)
+	return c.Render(http.StatusOK, "editPost.html", data)
 }
 
 // DeletePost Delete post
@@ -85,7 +88,9 @@ func SavePost(c echo.Context) error {
 	if err := c.Bind(&post); err != nil {
 		return echo.ErrBadRequest
 	}
-	c.Set("post", post)
+
+	data := make(echo.Map)
+	data["post"] = &post
 
 	//post.Validate(c.Validation)
 	//if c.Validation.HasErrors() {
@@ -97,7 +102,7 @@ func SavePost(c echo.Context) error {
 	if has && existPost.Id != post.Id {
 		//c.Validation.Error("Slug已经被使用！")
 		//return c.RenderTemplate("admin/editPost.html")
-		return c.Render(http.StatusOK, "admin/editPost.html", nil)
+		return c.Render(http.StatusOK, "editPost.html", data)
 	}
 
 	var affects int64
@@ -114,14 +119,14 @@ func SavePost(c echo.Context) error {
 		return c.Redirect(http.StatusOK, "/admin/posts")
 	} else {
 		c.Set("flash.error", "保存失败！")
-		return c.Render(http.StatusOK, "admin/editPost.html", nil)
+		return c.Render(http.StatusOK, "editPost.html", nil)
 	}
 
 }
 
 // ListComment query comments
 func ListComment(c echo.Context) error {
-	return c.Render(http.StatusOK, "admin/listComment", nil)
+	return c.Render(http.StatusOK, "listComment.html", nil)
 }
 
 // QueryComments Paginated query comments
@@ -167,8 +172,9 @@ func DeleteComment(c echo.Context) error {
 
 // Login To login page
 func Login(c echo.Context) error {
-	c.Set("title", "管理后台登录")
-	return c.Render(http.StatusOK, "login.html", nil)
+	data := make(echo.Map)
+	data["title"] = "管理后台登录"
+	return c.Render(http.StatusOK, "login.html", data)
 }
 
 // LoginSubmit Submit to login
@@ -188,14 +194,14 @@ func LoginSubmit(c echo.Context) error {
 		}
 
 	}
-	c.Set("flash.error", "登录失败！")
+	c.Set(flash_error, "登录失败！")
 	return c.Redirect(http.StatusFound, "/admin/login")
 }
 
 // Logout do logout
 func Logout(c echo.Context) error {
 	sess := getSession(c)
-	delete(sess.Values, "loginName")
+	sess.Values = make(map[interface{}]interface{})
 	sess.Save(c.Request(), c.Response())
 
 	return c.Redirect(http.StatusFound, "/admin/login")
