@@ -2,79 +2,81 @@ package controllers
 
 import (
 	"blogo/app/models"
-
-	"github.com/revel/revel"
-
+	"github.com/labstack/echo/v4"
+	"net/http"
 	"strings"
 	"time"
 )
 
-type Blog struct {
-	AppController
-}
-
 // Index The blog home page
-func (c Blog) Index() revel.Result {
+func Index(c echo.Context) error {
 	var posts []models.Post
 	err := models.Engine.Desc("id").Limit(4, 0).Find(&posts)
 	if err != nil {
 		panic(err)
 	}
 
-	c.ViewArgs["posts"] = posts
-
-	return c.Render()
+	c.Set("posts", posts)
+	return c.Render(http.StatusOK, "blog/index.html", nil)
 }
 
 // QueryPage Paginated query posts
-func (c Blog) QueryPage(page int) revel.Result {
-	return c.Render()
+func QueryPage(c echo.Context) error {
+	//page := c.Param("page")
+	return c.Render(http.StatusOK, "", nil)
 }
 
 // ShowPost Show post page
-func (c Blog) ShowPost(slug string) revel.Result {
+func ShowPost(c echo.Context) error {
+
+	slug := c.Param("slug")
 	post := new(models.Post)
 	has, _ := models.Engine.Where("Slug = ? ", slug).Get(post)
 	if has {
 		var comments []models.Comment
 		models.Engine.Where("post_id = ?", post.Id).Find(&comments)
-		c.ViewArgs["post"] = post
-		c.ViewArgs["comments"] = comments
-		return c.Render()
+		c.Set("post", post)
+		c.Set("comments", comments)
+		return c.Render(http.StatusOK, "blog/showPost.html", nil)
 	}
-	return c.NotFound("404你懂的！")
+	return echo.ErrNotFound
 }
 
 // AddComment Add comment
-func (c Blog) AddComment(comment models.Comment) revel.Result {
+func AddComment(c echo.Context) error {
+
+	var comment models.Comment
+	if err := c.Bind(&comment); err != nil {
+		return echo.ErrBadRequest
+	}
 
 	post := models.Post{}
 	has, _ := models.Engine.Id(comment.PostId).Get(&post)
 	if !has {
-		return c.RenderJSON(&models.AjaxResult{Succ: false, Error: "评论的文章不存在"})
+		return c.JSON(http.StatusOK, &models.AjaxResult{Succ: false, Error: "评论的文章不存在"})
 	}
 
-	comment.Validate(c.Validation)
-	if c.Validation.HasErrors() {
-		var errorMsg string
-		for _, validErr := range c.Validation.Errors {
-			errorMsg += validErr.Message + "\n"
-		}
-		return c.RenderJSON(&models.AjaxResult{Succ: false, Error: errorMsg})
-	}
+	//comment.Validate(c.Validation)
+	//if c.Validation.HasErrors() {
+	//	var errorMsg string
+	//	for _, validErr := range c.Validation.Errors {
+	//		errorMsg += validErr.Message + "\n"
+	//	}
+	//	return c.RenderJSON(&models.AjaxResult{Succ: false, Error: errorMsg})
+	//}
 
 	comment.Created = time.Now()
 	affects, _ := models.Engine.InsertOne(&comment)
 	if affects > 0 {
 		sql := "update post set comment_count = comment_count + 1 where id = ?"
 		models.Engine.Exec(sql, comment.PostId)
-		return c.RenderJSON(&models.AjaxResult{Succ: true})
+		return c.JSON(http.StatusOK, &models.AjaxResult{Succ: true})
 	}
-	return c.RenderJSON(&models.AjaxResult{Succ: false, Error: "添加评论出错！"})
+	return c.JSON(http.StatusOK, &models.AjaxResult{Succ: false, Error: "添加评论出错！"})
 }
 
 // Archives Show post archives
-func (c Blog) Archives() revel.Result {
+func Archives(c echo.Context) error {
 
 	var posts []models.Post
 	err := models.Engine.Desc("id").Find(&posts)
@@ -93,13 +95,13 @@ func (c Blog) Archives() revel.Result {
 		archiveMap[year_month] = append(archiveMap[year_month], p)
 	}
 
-	c.ViewArgs["archiveMonths"] = archiveMonths
-	c.ViewArgs["archiveMap"] = archiveMap
-	return c.Render()
+	c.Set("archiveMonths", archiveMonths)
+	c.Set("archiveMap", archiveMap)
+	return c.Render(http.StatusOK, "blog/archives.html", nil)
 }
 
 // Tags Show all tags
-func (c Blog) Tags() revel.Result {
+func Tags(c echo.Context) error {
 
 	allTags := map[string]int64{}
 	var posts []models.Post
@@ -114,16 +116,16 @@ func (c Blog) Tags() revel.Result {
 
 	}
 
-	c.ViewArgs["allTags"] = allTags
-	return c.Render()
+	c.Set("allTags", allTags)
+	return c.Render(http.StatusOK, "blog/tags.html", nil)
 }
 
 // Works Show all works
-func (c Blog) Works() revel.Result {
-	return c.Render()
+func Works(c echo.Context) error {
+	return c.Render(http.StatusOK, "blog/works.html", nil)
 }
 
 // About To about page
-func (c Blog) About() revel.Result {
-	return c.Render()
+func About(c echo.Context) error {
+	return c.Render(http.StatusOK, "blog/about.html", nil)
 }

@@ -1,6 +1,6 @@
 
 
-## 使用 Go Revel 框架开发的Blog
+## 使用 Echo framework 开发的 Blog
 
 
 - 管理后台访问地址：/admin/login

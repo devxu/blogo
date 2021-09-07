@@ -1,15 +1,13 @@
 package models
 
 import (
+	"github.com/go-xorm/xorm"
 	"github.com/google/uuid"
-	// _ "github.com/go-sql-driver/mysql"
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/robfig/config"
+	"log"
 	"strings"
 	"time"
-
-	"github.com/go-xorm/xorm"
-	_ "github.com/mattn/go-sqlite3"
-	"github.com/revel/config"
-	"github.com/revel/revel"
 )
 
 var (
@@ -18,7 +16,8 @@ var (
 )
 
 func init() {
-	revel.OnAppStart(func() {
+
+	time.AfterFunc(time.Second, func() {
 		syncDB()
 		insertTestData()
 	})
@@ -27,7 +26,10 @@ func init() {
 //获取数据库连接，同步数据库表结构
 func syncDB() {
 	var err error
-	MyConfig, _ = config.ReadDefault(revel.BasePath + "/conf/my.conf")
+	MyConfig, err = config.ReadDefault("conf/my.conf")
+	if err != nil {
+		log.Panicln(err)
+	}
 	dbDriver, _ := MyConfig.String("db", "db.driver")
 	dbUrl, _ := MyConfig.String("db", "db.url")
 	Engine, err = xorm.NewEngine(dbDriver, dbUrl)
@@ -67,7 +69,6 @@ func insertTestData() {
 			firstComment.Message = "第一个评论测试"
 			firstComment.Created = time.Now()
 			affects, _ = Engine.InsertOne(firstComment)
-			revel.AppLog.Info("insert first comment affects = ", affects)
 			if affects > 0 {
 				firstPost.CommentCount = 1
 				Engine.Update(firstPost)

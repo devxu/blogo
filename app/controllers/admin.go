@@ -4,35 +4,31 @@ import (
 	"blogo/app/models"
 	"crypto/md5"
 	"fmt"
+	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 	"io"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/google/uuid"
-	"github.com/revel/revel"
 )
 
-type Admin struct {
-	AppController
-}
-
 // Index  Admin Home
-func (c Admin) Index() revel.Result {
-	fmt.Println("Current session = ", c.Session())
-	return c.Render()
+func Home(c echo.Context) error {
+	fmt.Println("Current session = ", getSession(c))
+	return c.Render(http.StatusOK, "home.html", nil)
 }
 
 // ListPost  Post list
-func (c Admin) ListPost() revel.Result {
-	return c.Render()
+func ListPost(c echo.Context) error {
+	return c.Render(http.StatusOK, "admin/listPost.html", nil)
 }
 
 // QueryPosts Paginated query posts
-func (c Admin) QueryPosts() revel.Result {
-	draw, _ := strconv.Atoi(c.Params.Get("draw"))
-	start, _ := strconv.Atoi(c.Params.Get("start"))
-	length, _ := strconv.Atoi(c.Params.Get("length"))
+func QueryPosts(c echo.Context) error {
+	draw, _ := strconv.Atoi(c.FormValue("draw"))
+	start, _ := strconv.Atoi(c.FormValue("start"))
+	length, _ := strconv.Atoi(c.FormValue("length"))
 
 	var posts []models.Post
 	models.Engine.Cols("id", "Slug", "title", "comment_count", "created").Desc("id").Limit(length, start).Find(&posts)
@@ -43,56 +39,65 @@ func (c Admin) QueryPosts() revel.Result {
 	result.Data = &posts
 	result.RecordsFiltered = total
 	result.RecordsTotal = total
-	return c.RenderJSON(result)
+	return c.JSON(http.StatusOK, result)
 }
 
 // CreatePost  Create post
-func (c Admin) CreatePost() revel.Result {
-	c.ViewArgs["title"] = "创建文章"
+func CreatePost(c echo.Context) error {
 	post := &models.Post{}
 	post.Slug = strings.Replace(uuid.NewString(), "-", "", -1)
-	c.ViewArgs["post"] = post
-	return c.RenderTemplate("admin/editPost.html")
+	c.Set("title", "创建文章")
+	c.Set("post", post)
+	return c.Render(http.StatusOK, "admin/editPost.html", nil)
 }
 
 // EditPost Edit post
-func (c Admin) EditPost(id int64) revel.Result {
-	c.ViewArgs["title"] = "编辑文章"
+func EditPost(c echo.Context) error {
+	c.Set("title", "编辑文章")
+
+	id := c.Param("id")
 	var post models.Post
 	succ, _ := models.Engine.Id(id).Get(&post)
 	if succ {
-		c.ViewArgs["post"] = &post
+		c.Set("post", &post)
 	}
-	return c.Render()
+	return c.Render(http.StatusOK, "admin/editPost.html", nil)
 }
 
 // DeletePost Delete post
-func (c Admin) DeletePost(id int64) revel.Result {
+func DeletePost(c echo.Context) error {
+
+	id := c.Param("id")
 	affects, _ := models.Engine.Id(id).Delete(&models.Post{})
 	if affects > 0 {
 		models.Engine.Where("post_id = ?", id).Delete(&models.Comment{})
-		c.Flash.Success("已成功删除！")
+		c.Set("flash.success", "已成功删除！")
 	} else {
-		c.Flash.Error("删除失败！")
+		c.Set("flash.error", "删除失败！")
 	}
-	return c.Redirect("/admin/posts")
+	return c.Redirect(http.StatusFound, "/admin/posts")
 }
 
 // SavePost Save post
-func (c Admin) SavePost(post models.Post) revel.Result {
+func SavePost(c echo.Context) error {
 
-	c.ViewArgs["post"] = &post
-
-	post.Validate(c.Validation)
-	if c.Validation.HasErrors() {
-		return c.RenderTemplate("admin/editPost.html")
+	var post models.Post
+	if err := c.Bind(&post); err != nil {
+		return echo.ErrBadRequest
 	}
+	c.Set("post", post)
+
+	//post.Validate(c.Validation)
+	//if c.Validation.HasErrors() {
+	//	return c.RenderTemplate("admin/editPost.html")
+	//}
 
 	existPost := new(models.Post)
 	has, _ := models.Engine.Where("Slug = ?", post.Slug).Get(existPost)
 	if has && existPost.Id != post.Id {
-		c.Validation.Error("Slug已经被使用！")
-		return c.RenderTemplate("admin/editPost.html")
+		//c.Validation.Error("Slug已经被使用！")
+		//return c.RenderTemplate("admin/editPost.html")
+		return c.Render(http.StatusOK, "admin/editPost.html", nil)
 	}
 
 	var affects int64
@@ -105,25 +110,26 @@ func (c Admin) SavePost(post models.Post) revel.Result {
 	}
 
 	if affects > 0 {
-		c.Flash.Success("保存成功！")
-		return c.Redirect("/admin/posts")
+		c.Set("flash.success", "保存成功！")
+		return c.Redirect(http.StatusOK, "/admin/posts")
 	} else {
-		c.Validation.Error("保存失败！")
-		return c.RenderTemplate("admin/editPost.html")
+		c.Set("flash.error", "保存失败！")
+		return c.Render(http.StatusOK, "admin/editPost.html", nil)
 	}
 
 }
 
 // ListComment query comments
-func (c Admin) ListComment() revel.Result {
-	return c.Render()
+func ListComment(c echo.Context) error {
+	return c.Render(http.StatusOK, "admin/listComment", nil)
 }
 
 // QueryComments Paginated query comments
-func (c Admin) QueryComments() revel.Result {
-	draw, _ := strconv.Atoi(c.Params.Get("draw"))
-	start, _ := strconv.Atoi(c.Params.Get("start"))
-	length, _ := strconv.Atoi(c.Params.Get("length"))
+func QueryComments(c echo.Context) error {
+
+	draw, _ := strconv.Atoi(c.FormValue("draw"))
+	start, _ := strconv.Atoi(c.FormValue("start"))
+	length, _ := strconv.Atoi(c.FormValue("length"))
 
 	var comments []models.Comment
 	models.Engine.Cols("id", "Name", "Message", "created").Desc("id").Limit(length, start).Find(&comments)
@@ -134,11 +140,13 @@ func (c Admin) QueryComments() revel.Result {
 	result.Data = &comments
 	result.RecordsFiltered = total
 	result.RecordsTotal = total
-	return c.RenderJSON(result)
+	return c.JSON(http.StatusOK, result)
 }
 
 // DeleteComment Delete comment by id
-func (c Admin) DeleteComment(id int64) revel.Result {
+func DeleteComment(c echo.Context) error {
+
+	id := c.Param("id")
 	comment := models.Comment{}
 	has, _ := models.Engine.Id(id).Get(&comment)
 	if has {
@@ -146,41 +154,49 @@ func (c Admin) DeleteComment(id int64) revel.Result {
 		if affects > 0 {
 			sql := "update post set comment_count = comment_count - 1 where id = ?"
 			models.Engine.Exec(sql, comment.PostId)
-			c.Flash.Success("已成功删除！")
+			c.Set("flash.success", "已成功删除！")
 		} else {
-			c.Flash.Error("删除失败！")
+			c.Set("flash.error", "删除失败！")
+
 		}
 	} else {
-		c.Flash.Error("评论不存在！")
+		c.Set("flash.error", "评论不存在！")
 	}
-	return c.Redirect("/admin/comments")
+	return c.Redirect(http.StatusFound, "/admin/comments")
 }
 
 // Login To login page
-func (c Admin) Login() revel.Result {
-	c.ViewArgs["title"] = "管理后台登录"
-	return c.Render()
+func Login(c echo.Context) error {
+	c.Set("title", "管理后台登录")
+	return c.Render(http.StatusOK, "login.html", nil)
 }
 
 // LoginSubmit Submit to login
-func (c Admin) LoginSubmit(username string, password string) revel.Result {
+func LoginSubmit(c echo.Context) error {
+	username := c.FormValue("username")
+	password := c.FormValue("password")
 	if len(username) > 0 && len(password) > 0 {
 		hash := md5.New()
 		io.WriteString(hash, username+"^_^"+password)
 		secret := strings.ToUpper(fmt.Sprintf("%x", hash.Sum(nil)))
 		loginSecret, _ := models.MyConfig.String("login", "login.secret")
 		if secret == loginSecret {
-			c.Session().Set("loginName", username)
-			return c.Redirect("/admin/index")
+			sess := getSession(c)
+			sess.Values["loginName"] = username
+			sess.Save(c.Request(), c.Response())
+			return c.Redirect(http.StatusFound, "/admin/home")
 		}
 
 	}
-	c.Flash.Error("登录失败！")
-	return c.Redirect("/admin/login")
+	c.Set("flash.error", "登录失败！")
+	return c.Redirect(http.StatusFound, "/admin/login")
 }
 
 // Logout do logout
-func (c Admin) Logout() revel.Result {
-	c.Session().Invalidate() //销毁Session
-	return c.Redirect("/admin/login")
+func Logout(c echo.Context) error {
+	sess := getSession(c)
+	delete(sess.Values, "loginName")
+	sess.Save(c.Request(), c.Response())
+
+	return c.Redirect(http.StatusFound, "/admin/login")
 }
