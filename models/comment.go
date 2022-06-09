@@ -6,11 +6,11 @@ import (
 
 type Comment struct {
 	Id      int64
-	PostId  int64 `xorm:"post_id bigint"`
-	Name    string
-	Email   string
-	Website string
-	Message string `xorm:"text"`
+	PostId  int64  `xorm:"post_id bigint" form:"postId"`
+	Name    string `form:"name"`
+	Email   string `form:"email"`
+	Website string `form:"website"`
+	Message string `xorm:"text" form:"message"`
 	Created time.Time
 }
 

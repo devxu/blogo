@@ -53,7 +53,7 @@ func AddComment(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	post := models.Post{}
+	var post models.Post
 	has, _ := models.Engine.Id(comment.PostId).Get(&post)
 	if !has {
 		return c.JSON(http.StatusOK, &models.AjaxResult{Succ: false, Error: "评论的文章不存在"})

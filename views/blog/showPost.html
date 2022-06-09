@@ -114,15 +114,15 @@
 									<div class="contact-form">
 										<h4>Leave a comment</h4>
 										<form id="commentForm">
-											<input type="hidden" name="comment.PostId" value="{{.post.Id}}">
+											<input type="hidden" name="postId" value="{{.post.Id}}">
 											<div class="row">
 												<div class="col-md-4">
-													<input type="text" placeholder="name" name="comment.Name">
-													<input type="text" placeholder="e-mail" name="comment.Email">
-													<input type="text" placeholder="website" name="comment.Website">
+													<input type="text" placeholder="name" name="Name">
+													<input type="text" placeholder="e-mail" name="Email">
+													<input type="text" placeholder="website" name="Website">
 												</div>
 												<div class="col-md-8">
-													<textarea rows="6" placeholder="Message" name="comment.Message"></textarea>
+													<textarea rows="6" placeholder="Message" name="Message"></textarea>
 													<button type="button" id="commentBtn">Send Message</button>
 												</div>
 											</div>
@@ -161,7 +161,7 @@
 				var name = $(this).attr('name');
 				var value = $(this).val();
 				if(value){
-					data[name] = value
+					data[name] = value;
 				}
 			});
 

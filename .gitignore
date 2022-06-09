@@ -2,4 +2,4 @@ app/tmp/
 .DS_Store
 none
 target/**/*
-
+.idea/
