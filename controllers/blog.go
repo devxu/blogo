@@ -87,7 +87,7 @@ func Archives(c echo.Context) error {
 		panic(err)
 	}
 
-	archiveMonths := []string{}
+	var archiveMonths []string
 	var archiveMap = map[string][]models.Post{}
 	for _, p := range posts {
 		year_month := p.GetCreated().Format("2006-01")
