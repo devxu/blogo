@@ -188,7 +188,7 @@ func LoginSubmit(c echo.Context) error {
 		loginSecret, _ := models.MyConfig.String("login", "login.secret")
 		if secret == loginSecret {
 			sess := getSession(c)
-			sess.Values["loginName"] = username
+			sess.Values[SESSION_USERNAME] = username
 			sess.Save(c.Request(), c.Response())
 			return c.Redirect(http.StatusFound, "/admin/home")
 		}

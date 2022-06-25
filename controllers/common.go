@@ -17,6 +17,7 @@ const (
 	auth_ignore_paths  = "/admin/login,/admin/logout"
 	auth_check_pattern = "^/admin/.*$"
 	flash_error        = "flash.error"
+	SESSION_USERNAME   = "loginName"
 )
 
 var (
@@ -97,11 +98,12 @@ func CheckAuth() echo.MiddlewareFunc {
 			matched, _ := regexp.MatchString(auth_check_pattern, c.Request().RequestURI)
 			if matched {
 				sess := getSession(c)
-				if sess.Values["loginName"] == nil {
+				if sess.Values[SESSION_USERNAME] == nil {
 					return echo.ErrForbidden
 				}
 			}
 			return next(c)
 		}
+
 	}
 }
