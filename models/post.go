@@ -5,11 +5,11 @@ import (
 )
 
 type Post struct {
-	Id           int64
-	Slug         string
-	Title        string `xorm:"VARCHAR(300)"`
-	Content      string `xorm:"text"`
-	Tags         string `xorm:"text"`
+	Id           int64  `form:"id"`
+	Slug         string `form:"slug"`
+	Title        string `xorm:"VARCHAR(300)" form:"title"`
+	Content      string `xorm:"text" form:"content"`
+	Tags         string `xorm:"text" form:"tags"`
 	CommentCount int
 	Created      time.Time
 }

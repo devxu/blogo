@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -86,6 +87,7 @@ func SavePost(c echo.Context) error {
 
 	var post models.Post
 	if err := c.Bind(&post); err != nil {
+		log.Println("SavePost err:", err)
 		return echo.ErrBadRequest
 	}
 
