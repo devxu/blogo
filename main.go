@@ -21,7 +21,7 @@ func main() {
 	e := echo.New()
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte(session_key))))
 	e.Use(controllers.CheckAuth())
-	e.Use(middleware.Logger())
+	//e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Renderer = controllers.NewTemplateRenderer()
 

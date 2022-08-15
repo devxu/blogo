@@ -118,7 +118,7 @@ func SavePost(c echo.Context) error {
 
 	if affects > 0 {
 		c.Set("flash.success", "保存成功！")
-		return c.Redirect(http.StatusOK, "/admin/posts")
+		return c.Redirect(http.StatusFound, "/admin/posts")
 	} else {
 		c.Set("flash.error", "保存失败！")
 		return c.Render(http.StatusOK, "editPost.html", nil)
